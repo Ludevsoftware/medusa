@@ -1,39 +1,50 @@
 # 📋 Tarefas - Implementação API Client
 
-**Monorepo Turborepo + Drones Agrícolas**  
-**Tempo Total:** 6-8 horas
+**Monorepo Turborepo + Drones Agrícolas + Jest**  
+**Tempo Total:** 8-10 horas
 
 ---
 
-## ✅ FASE 1: Setup Inicial (1h)
+## ✅ FASE 1: Setup Inicial (1h 30min)
 
-### [ ] Tarefa #1: Criar Pacote api-client (15min)
+### [ ] Tarefa #1: Criar Pacote api-client (20min)
 **Prioridade:** 🔴 Crítica
 
 **Ações:**
 ```bash
 cd seu-monorepo
 mkdir -p packages/api-client/src/{client,sdk,hooks,types}
+mkdir -p packages/api-client/__tests__/{client,sdk,hooks}
 cd packages/api-client
 ```
 
 **Criar:**
 - [ ] `package.json`
 - [ ] `tsconfig.json`
+- [ ] `jest.config.js`
 - [ ] `README.md`
 - [ ] `.gitignore`
 
-**Instalar:**
+**Instalar dependências:**
 ```bash
-npm install @tanstack/react-query@^5.59.0 qs@^6.13.0
-npm install -D @types/qs@^6.9.16 typescript@^5.6.3
+pnpm add @tanstack/react-query@^5.59.0 qs@^6.13.0
+pnpm add -D @types/qs@^6.9.16 typescript@^5.6.3
+pnpm add -D jest@^29.7.0 @types/jest@^29.5.0
+pnpm add -D ts-jest@^29.1.0
+pnpm add -D @testing-library/react@^14.0.0
+pnpm add -D @testing-library/jest-dom@^6.1.0
+pnpm add -D @testing-library/react-hooks@^8.0.1
 ```
+
+**Configurar Jest:**
+- [ ] Criar `jest.config.js` com preset ts-jest
+- [ ] Adicionar scripts de test no `package.json`
 
 **Resultado:** Estrutura base criada e dependências instaladas.
 
 ---
 
-### [ ] Tarefa #2: Cliente HTTP com Auth JWT (30min)
+### [ ] Tarefa #2: Cliente HTTP com Auth JWT (45min)
 **Prioridade:** 🔴 Crítica
 
 **Criar:** `packages/api-client/src/client/index.ts`
@@ -49,17 +60,28 @@ npm install -D @types/qs@^6.9.16 typescript@^5.6.3
 - [ ] Gerenciamento de headers (Authorization, Content-Type)
 - [ ] Parse de query params com `qs`
 
+**Criar testes:** `packages/api-client/__tests__/client/index.test.ts`
+
 **Testar:**
-```typescript
-const client = new ApiClient('http://localhost:3001')
-client.fetch('/api/test').then(console.log)
+- [ ] `ApiClient` inicializa corretamente
+- [ ] `setToken()` salva token no localStorage
+- [ ] `getToken()` recupera token
+- [ ] `clearToken()` remove token
+- [ ] `fetch()` adiciona Authorization header quando tem token
+- [ ] `fetch()` serializa query params corretamente
+- [ ] `FetchError` captura erros da API
+- [ ] Requests com body são stringified
+
+**Rodar testes:**
+```bash
+pnpm test client/index.test.ts
 ```
 
-**Resultado:** Cliente HTTP funcionando com JWT.
+**Resultado:** Cliente HTTP funcionando com JWT + testes passando.
 
 ---
 
-### [ ] Tarefa #3: TypeScript Types (15min)
+### [ ] Tarefa #3: TypeScript Types (20min)
 **Prioridade:** 🔴 Crítica
 
 **Criar:** `packages/api-client/src/types/index.ts`
@@ -70,13 +92,31 @@ client.fetch('/api/test').then(console.log)
 - [ ] `Plot` + `PlotList` + `CreatePlot`
 - [ ] `Pilot` + `PilotList` + `CreatePilot`
 
-**Resultado:** Tipos TypeScript completos.
+**Criar testes:** `packages/api-client/__tests__/types/index.test.ts`
+
+**Testar:**
+- [ ] Types exportam corretamente
+- [ ] Interfaces têm propriedades corretas
+- [ ] Omit<> funciona em CreateDrone/CreatePlot/CreatePilot
+- [ ] PaginatedResponse é genérico
+
+**Rodar testes:**
+```bash
+pnpm test types/index.test.ts
+```
+
+**Verificar tipos:**
+```bash
+pnpm tsc --noEmit
+```
+
+**Resultado:** Tipos TypeScript completos + validados.
 
 ---
 
-## ✅ FASE 2: SDK (1h 30min)
+## ✅ FASE 2: SDK (2h 30min)
 
-### [ ] Tarefa #4: SDK de Drones (30min)
+### [ ] Tarefa #4: SDK de Drones (45min)
 **Prioridade:** 🔴 Crítica
 
 **Criar:** `packages/api-client/src/sdk/drones.ts`
@@ -88,17 +128,26 @@ client.fetch('/api/test').then(console.log)
 - [ ] `update(id, data)` → PATCH /api/drones/:id
 - [ ] `delete(id)` → DELETE /api/drones/:id
 
+**Criar testes:** `packages/api-client/__tests__/sdk/drones.test.ts`
+
 **Testar:**
-```typescript
-import { sdk } from '../sdk'
-sdk.drones.list().then(console.log)
+- [ ] `list()` chama `/api/drones` com query params
+- [ ] `get(id)` chama `/api/drones/:id`
+- [ ] `create(data)` faz POST com body correto
+- [ ] `update(id, data)` faz PATCH com body correto
+- [ ] `delete(id)` faz DELETE no endpoint correto
+- [ ] Todos os métodos usam `client.fetch()`
+
+**Rodar testes:**
+```bash
+pnpm test sdk/drones.test.ts
 ```
 
-**Resultado:** CRUD de drones funcionando.
+**Resultado:** CRUD de drones funcionando + testes passando.
 
 ---
 
-### [ ] Tarefa #5: SDK de Plots (Talhões) (30min)
+### [ ] Tarefa #5: SDK de Plots (Talhões) (45min)
 **Prioridade:** 🔴 Crítica
 
 **Criar:** `packages/api-client/src/sdk/plots.ts`
@@ -110,11 +159,23 @@ sdk.drones.list().then(console.log)
 - [ ] `update(id, data)`
 - [ ] `delete(id)`
 
-**Resultado:** CRUD de plots funcionando.
+**Criar testes:** `packages/api-client/__tests__/sdk/plots.test.ts`
+
+**Testar:**
+- [ ] Todos os métodos CRUD funcionando
+- [ ] Endpoints corretos chamados
+- [ ] Query params serializados
+
+**Rodar testes:**
+```bash
+pnpm test sdk/plots.test.ts
+```
+
+**Resultado:** CRUD de plots funcionando + testes passando.
 
 ---
 
-### [ ] Tarefa #6: SDK de Pilots (Pilotos) (30min)
+### [ ] Tarefa #6: SDK de Pilots (Pilotos) (45min)
 **Prioridade:** 🔴 Crítica
 
 **Criar:** `packages/api-client/src/sdk/pilots.ts`
@@ -126,11 +187,23 @@ sdk.drones.list().then(console.log)
 - [ ] `update(id, data)`
 - [ ] `delete(id)`
 
-**Resultado:** CRUD de pilots funcionando.
+**Criar testes:** `packages/api-client/__tests__/sdk/pilots.test.ts`
+
+**Testar:**
+- [ ] Todos os métodos CRUD funcionando
+- [ ] Endpoints corretos chamados
+- [ ] Body serializado corretamente
+
+**Rodar testes:**
+```bash
+pnpm test sdk/pilots.test.ts
+```
+
+**Resultado:** CRUD de pilots funcionando + testes passando.
 
 ---
 
-### [ ] Tarefa #7: SDK Principal (15min)
+### [ ] Tarefa #7: SDK Principal (30min)
 **Prioridade:** 🔴 Crítica
 
 **Criar:** `packages/api-client/src/sdk/index.ts`
@@ -141,20 +214,27 @@ sdk.drones.list().then(console.log)
 - [ ] Exportar instância singleton `sdk`
 - [ ] Exportar `apiClient`
 
+**Criar testes:** `packages/api-client/__tests__/sdk/index.test.ts`
+
 **Testar:**
-```typescript
-import { sdk } from '@repo/api-client'
-sdk.drones.list()
-sdk.plots.get('123')
+- [ ] `ApiSDK` inicializa com todas as APIs
+- [ ] `sdk.drones` é instância de `DronesApi`
+- [ ] `sdk.plots` é instância de `PlotsApi`
+- [ ] `sdk.pilots` é instância de `PilotsApi`
+- [ ] Singleton funciona corretamente
+
+**Rodar testes:**
+```bash
+pnpm test sdk/index.test.ts
 ```
 
-**Resultado:** SDK completo e funcional.
+**Resultado:** SDK completo e funcional + testes passando.
 
 ---
 
-## ✅ FASE 3: React Query Hooks (2h)
+## ✅ FASE 3: React Query Hooks (3h)
 
-### [ ] Tarefa #8: Query Keys (15min)
+### [ ] Tarefa #8: Query Keys (25min)
 **Prioridade:** 🔴 Crítica
 
 **Criar:** `packages/api-client/src/hooks/query-keys.ts`
@@ -165,18 +245,33 @@ sdk.plots.get('123')
 - [ ] `plotsKeys`
 - [ ] `pilotsKeys`
 
-**Resultado:** Sistema de query keys hierárquico.
+**Criar testes:** `packages/api-client/__tests__/hooks/query-keys.test.ts`
+
+**Testar:**
+- [ ] `createQueryKeys()` gera estrutura correta
+- [ ] `dronesKeys.all` retorna `['drones']`
+- [ ] `dronesKeys.lists()` retorna `['drones', 'list']`
+- [ ] `dronesKeys.list(params)` inclui params no array
+- [ ] `dronesKeys.detail(id)` retorna `['drones', 'detail', id]`
+- [ ] Keys são readonly e const
+
+**Rodar testes:**
+```bash
+pnpm test hooks/query-keys.test.ts
+```
+
+**Resultado:** Sistema de query keys hierárquico + testes passando.
 
 ---
 
-### [ ] Tarefa #9: Hooks de Drones (30min)
+### [ ] Tarefa #9: Hooks de Drones (50min)
 **Prioridade:** 🟡 Alta
 
 **Criar:** `packages/api-client/src/hooks/use-drones.ts`
 
 **Implementar hooks:**
 - [ ] `useDrones(params?)` → useQuery
-- [ ] `useDrone(id)` → useQuery
+- [ ] `useDrone(id)` → useQuery (enabled: !!id)
 - [ ] `useCreateDrone()` → useMutation
 - [ ] `useUpdateDrone(id)` → useMutation
 - [ ] `useDeleteDrone()` → useMutation
@@ -186,11 +281,27 @@ sdk.plots.get('123')
 - [ ] Update → invalidar `lists()` + `detail(id)`
 - [ ] Delete → invalidar `lists()` + `detail(id)`
 
-**Resultado:** Hooks de drones funcionando.
+**Criar testes:** `packages/api-client/__tests__/hooks/use-drones.test.tsx`
+
+**Testar com @testing-library/react-hooks:**
+- [ ] `useDrones()` chama `sdk.drones.list()`
+- [ ] `useDrone(id)` chama `sdk.drones.get(id)`
+- [ ] `useDrone()` desabilitado quando id é vazio
+- [ ] `useCreateDrone().mutate()` chama `sdk.drones.create()`
+- [ ] `useCreateDrone()` invalida cache após sucesso
+- [ ] `useUpdateDrone(id).mutate()` invalida caches corretos
+- [ ] `useDeleteDrone().mutate()` invalida caches
+
+**Rodar testes:**
+```bash
+pnpm test hooks/use-drones.test.tsx
+```
+
+**Resultado:** Hooks de drones funcionando + testes passando.
 
 ---
 
-### [ ] Tarefa #10: Hooks de Plots (30min)
+### [ ] Tarefa #10: Hooks de Plots (50min)
 **Prioridade:** 🟡 Alta
 
 **Criar:** `packages/api-client/src/hooks/use-plots.ts`
@@ -203,11 +314,23 @@ sdk.plots.get('123')
 - [ ] `useDeletePlot()`
 - [ ] Invalidação de cache
 
-**Resultado:** Hooks de plots funcionando.
+**Criar testes:** `packages/api-client/__tests__/hooks/use-plots.test.tsx`
+
+**Testar:**
+- [ ] Todos os hooks chamam SDK corretamente
+- [ ] Cache invalidation funciona
+- [ ] enabled: !!id em `usePlot()`
+
+**Rodar testes:**
+```bash
+pnpm test hooks/use-plots.test.tsx
+```
+
+**Resultado:** Hooks de plots funcionando + testes passando.
 
 ---
 
-### [ ] Tarefa #11: Hooks de Pilots (30min)
+### [ ] Tarefa #11: Hooks de Pilots (50min)
 **Prioridade:** 🟡 Alta
 
 **Criar:** `packages/api-client/src/hooks/use-pilots.ts`
@@ -220,11 +343,22 @@ sdk.plots.get('123')
 - [ ] `useDeletePilot()`
 - [ ] Invalidação de cache
 
-**Resultado:** Hooks de pilots funcionando.
+**Criar testes:** `packages/api-client/__tests__/hooks/use-pilots.test.tsx`
+
+**Testar:**
+- [ ] Todos os hooks chamam SDK corretamente
+- [ ] Mutations invalidam cache apropriadamente
+
+**Rodar testes:**
+```bash
+pnpm test hooks/use-pilots.test.tsx
+```
+
+**Resultado:** Hooks de pilots funcionando + testes passando.
 
 ---
 
-### [ ] Tarefa #12: Hook de Auth (15min)
+### [ ] Tarefa #12: Hook de Auth (30min)
 **Prioridade:** 🟡 Alta
 
 **Criar:** `packages/api-client/src/hooks/use-auth.ts`
@@ -237,7 +371,21 @@ sdk.plots.get('123')
   - [ ] Limpar token com `apiClient.clearToken()`
   - [ ] Limpar cache com `queryClient.clear()`
 
-**Resultado:** Sistema de autenticação funcionando.
+**Criar testes:** `packages/api-client/__tests__/hooks/use-auth.test.tsx`
+
+**Testar:**
+- [ ] `useLogin()` chama `/api/auth/login`
+- [ ] Token é salvo após login bem-sucedido
+- [ ] User data é salva no cache
+- [ ] `useLogout()` limpa token
+- [ ] `useLogout()` limpa todo o cache
+
+**Rodar testes:**
+```bash
+pnpm test hooks/use-auth.test.tsx
+```
+
+**Resultado:** Sistema de autenticação funcionando + testes passando.
 
 ---
 
@@ -253,11 +401,16 @@ sdk.plots.get('123')
 - [ ] Hooks de auth
 - [ ] Query keys
 
+**Verificar:**
+```bash
+pnpm tsc --noEmit
+```
+
 **Resultado:** Hooks acessíveis via `@repo/api-client/hooks`.
 
 ---
 
-### [ ] Tarefa #14: Export Principal (10min)
+### [ ] Tarefa #14: Export Principal (15min)
 **Prioridade:** 🔴 Crítica
 
 **Criar:** `packages/api-client/src/index.ts`
@@ -268,7 +421,22 @@ sdk.plots.get('123')
 - [ ] `type * from './types'`
 - [ ] `* from './hooks'`
 
-**Resultado:** API pública do pacote definida.
+**Rodar todos os testes:**
+```bash
+pnpm test
+```
+
+**Coverage:**
+```bash
+pnpm test --coverage
+```
+
+**Build do pacote:**
+```bash
+pnpm build
+```
+
+**Resultado:** API pública do pacote definida + todos os testes passando.
 
 ---
 
@@ -277,32 +445,47 @@ sdk.plots.get('123')
 ### [ ] Tarefa #15: Setup App web-admin (1h 30min)
 **Prioridade:** 🟡 Alta
 
-**1. Instalar dependências:**
-```bash
-cd apps/web-admin
-npm install @tanstack/react-query@^5.59.0
-npm install @tanstack/react-query-devtools@^5.59.0
+**1. Adicionar ao package.json:**
+```json
+{
+  "dependencies": {
+    "@repo/api-client": "workspace:*",
+    "@tanstack/react-query": "^5.59.0",
+    "@tanstack/react-query-devtools": "^5.59.0"
+  }
+}
 ```
 
-**2. Adicionar ao package.json:**
-- [ ] Adicionar `"@repo/api-client": "*"` em dependencies
+**2. Instalar dependências (na raiz do monorepo):**
+```bash
+pnpm install
+```
 
-**3. Criar Provider:**
-- [ ] Criar `providers/query-provider.tsx`
+**3. Criar Provider:** `apps/web-admin/providers/query-provider.tsx`
 - [ ] Implementar `QueryProvider` com `QueryClient`
 - [ ] Adicionar `ReactQueryDevtools`
+- [ ] Configurar defaultOptions (staleTime, refetchOnWindowFocus)
 
-**4. Atualizar Layout:**
+**4. Atualizar Layout:** `apps/web-admin/app/layout.tsx`
 - [ ] Envolver app com `<QueryProvider>`
+- [ ] Marcar como 'use client' se necessário
 
-**5. Variáveis de ambiente:**
-- [ ] Criar `.env.local`
-- [ ] Adicionar `NEXT_PUBLIC_API_URL=http://localhost:3001`
+**5. Variáveis de ambiente:** `apps/web-admin/.env.local`
+```bash
+NEXT_PUBLIC_API_URL=http://localhost:3001
+```
 
 **6. Testar:**
-- [ ] Criar página de teste `/drones`
+- [ ] Criar página de teste `app/test-api/page.tsx`
 - [ ] Usar `useDrones()` hook
-- [ ] Verificar dados carregando
+- [ ] Verificar React Query DevTools funcionando
+
+**7. Rodar app:**
+```bash
+pnpm --filter web-admin dev
+# ou na raiz
+turbo dev --filter=web-admin
+```
 
 **Resultado:** App admin integrado e funcionando.
 
@@ -312,12 +495,12 @@ npm install @tanstack/react-query-devtools@^5.59.0
 **Prioridade:** 🟡 Alta
 
 **Repetir passos da Tarefa #15:**
-- [ ] Instalar dependências
-- [ ] Adicionar ao package.json
-- [ ] Criar Provider
-- [ ] Atualizar Layout
-- [ ] Configurar .env.local
+- [ ] Adicionar dependências ao `package.json`
+- [ ] Criar `QueryProvider`
+- [ ] Atualizar `Layout`
+- [ ] Configurar `.env.local`
 - [ ] Criar página de teste
+- [ ] Rodar: `turbo dev --filter=web-pilot`
 
 **Resultado:** App pilot integrado e funcionando.
 
@@ -327,12 +510,12 @@ npm install @tanstack/react-query-devtools@^5.59.0
 **Prioridade:** 🟡 Alta
 
 **Repetir passos da Tarefa #15:**
-- [ ] Instalar dependências
-- [ ] Adicionar ao package.json
-- [ ] Criar Provider
-- [ ] Atualizar Layout
-- [ ] Configurar .env.local
+- [ ] Adicionar dependências ao `package.json`
+- [ ] Criar `QueryProvider`
+- [ ] Atualizar `Layout`
+- [ ] Configurar `.env.local`
 - [ ] Criar página de teste
+- [ ] Rodar: `turbo dev --filter=web-field`
 
 **Resultado:** App field integrado e funcionando.
 
@@ -414,9 +597,39 @@ npm install @tanstack/react-query-devtools@^5.59.0
 
 ---
 
-## ✅ FASE 6: Testes e Validação (1h)
+## ✅ FASE 6: Testes e Validação (1h 30min)
 
-### [ ] Tarefa #22: Testes Funcionais (1h)
+### [ ] Tarefa #22: Configurar Turbo para Testes (15min)
+**Prioridade:** 🟢 Média
+
+**Atualizar:** `turbo.json` (na raiz)
+
+**Adicionar pipeline de test:**
+```json
+{
+  "pipeline": {
+    "test": {
+      "outputs": ["coverage/**"],
+      "dependsOn": ["^build"]
+    },
+    "test:watch": {
+      "cache": false
+    }
+  }
+}
+```
+
+**Rodar testes com Turbo:**
+```bash
+turbo test
+turbo test --filter=api-client
+```
+
+**Resultado:** Testes integrados no Turborepo.
+
+---
+
+### [ ] Tarefa #23: Testes Funcionais (1h 15min)
 **Prioridade:** 🟢 Média
 
 **Testar fluxo completo:**
@@ -430,10 +643,27 @@ npm install @tanstack/react-query-devtools@^5.59.0
 - [ ] Logout funcionando
 
 **Verificar:**
-- [ ] `npm run type-check` sem erros
+```bash
+# Type check
+pnpm tsc --noEmit
+
+# Lint
+turbo lint
+
+# Tests
+turbo test
+
+# Build
+turbo build
+```
+
+**Checklist final:**
 - [ ] Console sem erros
 - [ ] Network requests corretos
 - [ ] Cache otimizado
+- [ ] Coverage > 70% no api-client
+- [ ] Todos os testes unitários passando
+- [ ] Builds sem warnings
 
 **Resultado:** Sistema validado e funcionando.
 
@@ -441,87 +671,163 @@ npm install @tanstack/react-query-devtools@^5.59.0
 
 ## 📊 Resumo de Progresso
 
-### Fase 1: Setup Inicial
-- [ ] #1 Criar Pacote
-- [ ] #2 Cliente HTTP
-- [ ] #3 Types
+### Fase 1: Setup Inicial (1h 30min)
+- [ ] #1 Criar Pacote + Jest
+- [ ] #2 Cliente HTTP + Testes
+- [ ] #3 Types + Testes
 
-### Fase 2: SDK
-- [ ] #4 SDK Drones
-- [ ] #5 SDK Plots
-- [ ] #6 SDK Pilots
-- [ ] #7 SDK Principal
+### Fase 2: SDK (2h 30min)
+- [ ] #4 SDK Drones + Testes
+- [ ] #5 SDK Plots + Testes
+- [ ] #6 SDK Pilots + Testes
+- [ ] #7 SDK Principal + Testes
 
-### Fase 3: Hooks
-- [ ] #8 Query Keys
-- [ ] #9 Hooks Drones
-- [ ] #10 Hooks Plots
-- [ ] #11 Hooks Pilots
-- [ ] #12 Hook Auth
+### Fase 3: Hooks (3h)
+- [ ] #8 Query Keys + Testes
+- [ ] #9 Hooks Drones + Testes
+- [ ] #10 Hooks Plots + Testes
+- [ ] #11 Hooks Pilots + Testes
+- [ ] #12 Hook Auth + Testes
 - [ ] #13 Exports Hooks
-- [ ] #14 Export Principal
+- [ ] #14 Export Principal + Coverage
 
-### Fase 4: Integração
+### Fase 4: Integração (4h 30min)
 - [ ] #15 Setup web-admin
 - [ ] #16 Setup web-pilot
 - [ ] #17 Setup web-field
 
-### Fase 5: Páginas
+### Fase 5: Páginas (2h)
 - [ ] #18 Página Login
 - [ ] #19 Página Drones
 - [ ] #20 Página Plots
 - [ ] #21 Página Pilots
 
-### Fase 6: Validação
-- [ ] #22 Testes Funcionais
+### Fase 6: Validação (1h 30min)
+- [ ] #22 Turbo Test Config
+- [ ] #23 Testes Funcionais
 
 ---
 
 ## 🎯 Progresso Geral
 
 ```
-Total de Tarefas: 22
-Concluídas: 0/22 (0%)
+Total de Tarefas: 23
+Concluídas: 0/23 (0%)
 
-Fase 1: [░░░░░] 0/3
-Fase 2: [░░░░░] 0/4
-Fase 3: [░░░░░] 0/7
-Fase 4: [░░░░░] 0/3
-Fase 5: [░░░░░] 0/4
-Fase 6: [░░░░░] 0/1
+Fase 1: [░░░░░] 0/3 (1h 30min)
+Fase 2: [░░░░░] 0/4 (2h 30min)
+Fase 3: [░░░░░] 0/7 (3h)
+Fase 4: [░░░░░] 0/3 (4h 30min)
+Fase 5: [░░░░░] 0/4 (2h)
+Fase 6: [░░░░░] 0/2 (1h 30min)
 ```
 
 ---
 
 ## ⏱️ Tempo por Fase
 
-| Fase | Tarefas | Tempo |
-|------|---------|-------|
-| 1. Setup Inicial | 3 | 1h |
-| 2. SDK | 4 | 1h 30min |
-| 3. Hooks | 7 | 2h |
-| 4. Integração Apps | 3 | 4h 30min |
-| 5. Páginas | 4 | 2h |
-| 6. Validação | 1 | 1h |
-| **TOTAL** | **22** | **12h** |
+| Fase | Tarefas | Tempo | Com Testes |
+|------|---------|-------|------------|
+| 1. Setup Inicial | 3 | 1h 30min | ✅ Jest + Coverage |
+| 2. SDK | 4 | 2h 30min | ✅ Unit Tests |
+| 3. Hooks | 7 | 3h | ✅ React Hooks Testing |
+| 4. Integração Apps | 3 | 4h 30min | - |
+| 5. Páginas | 4 | 2h | - |
+| 6. Validação | 2 | 1h 30min | ✅ E2E + Coverage |
+| **TOTAL** | **23** | **15h** | **🎯 70%+ Coverage** |
 
-*Tempo reduzido se usar script e código pronto: **6-8h***
+*Tempo sem testes unitários: **10-12h***  
+*Tempo com código pronto + sem testes: **6-8h***
 
 ---
 
 ## 🚀 Começar Agora
 
-1. **Execute o script:**
+### 1. Execute o script de setup:
 ```bash
 chmod +x setup-api-client.sh
 ./setup-api-client.sh
 ```
 
-2. **Copie o código:**
+### 2. Instale dependências (na raiz):
+```bash
+pnpm install
+```
+
+### 3. Copie o código:
 Abra `CODIGO_PRONTO_COPIAR.md` e copie arquivo por arquivo.
 
-3. **Marque as tarefas:**
+### 4. Configure Jest no pacote:
+```bash
+cd packages/api-client
+pnpm add -D jest @types/jest ts-jest
+pnpm add -D @testing-library/react @testing-library/jest-dom
+pnpm add -D @testing-library/react-hooks
+```
+
+### 5. Adicione scripts no `package.json`:
+```json
+{
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "type-check": "tsc --noEmit"
+  }
+}
+```
+
+### 6. Marque as tarefas conforme avança:
 Use este arquivo para acompanhar seu progresso.
+
+---
+
+## 🧪 Comandos Úteis
+
+### Testes
+```bash
+# Rodar todos os testes
+turbo test
+
+# Rodar testes do api-client
+turbo test --filter=api-client
+
+# Coverage
+pnpm --filter api-client test:coverage
+
+# Watch mode
+pnpm --filter api-client test:watch
+```
+
+### Desenvolvimento
+```bash
+# Rodar todos os apps
+turbo dev
+
+# Rodar app específico
+turbo dev --filter=web-admin
+
+# Build tudo
+turbo build
+
+# Lint
+turbo lint
+
+# Type check
+pnpm tsc --noEmit
+```
+
+### Turborepo
+```bash
+# Ver dependências
+turbo run build --dry-run
+
+# Limpar cache
+turbo run build --force
+
+# Ver graph
+turbo run build --graph
+```
 
 ---
 
@@ -530,7 +836,30 @@ Use este arquivo para acompanhar seu progresso.
 - **Código pronto:** `CODIGO_PRONTO_COPIAR.md`
 - **Guia passo a passo:** `START_HERE.md`
 - **Arquitetura detalhada:** `PLANO_MONOREPO_TURBOREPO.md`
+- **Testes:** Cada tarefa agora tem seção de testes unitários
 
 ---
 
-**Boa sorte! 🚀**
+## ✅ Checklist de Qualidade
+
+Antes de considerar cada fase completa:
+
+### Fase 1-3 (Pacote api-client):
+- [ ] `pnpm test` passando com 70%+ coverage
+- [ ] `pnpm type-check` sem erros
+- [ ] `turbo build --filter=api-client` sem warnings
+
+### Fase 4-5 (Apps):
+- [ ] Apps rodando sem erros
+- [ ] React Query DevTools visível
+- [ ] Requests aparecendo no Network
+
+### Fase 6 (Validação):
+- [ ] `turbo test` todos passando
+- [ ] `turbo build` sem erros
+- [ ] `turbo lint` clean
+- [ ] Coverage report gerado
+
+---
+
+**Boa sorte! 🚀 Com testes unitários você terá 70%+ de coverage!**

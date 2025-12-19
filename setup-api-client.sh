@@ -19,6 +19,10 @@ mkdir -p packages/api-client/src/client
 mkdir -p packages/api-client/src/sdk
 mkdir -p packages/api-client/src/hooks
 mkdir -p packages/api-client/src/types
+mkdir -p packages/api-client/__tests__/client
+mkdir -p packages/api-client/__tests__/sdk
+mkdir -p packages/api-client/__tests__/hooks
+mkdir -p packages/api-client/__tests__/types
 echo -e "${GREEN}✓ Estrutura criada${NC}"
 echo ""
 
@@ -35,6 +39,9 @@ cat > packages/api-client/package.json << 'EOF'
     "./hooks": "./src/hooks/index.ts"
   },
   "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "lint": "eslint src/",
     "type-check": "tsc --noEmit"
   },
@@ -44,14 +51,71 @@ cat > packages/api-client/package.json << 'EOF'
   },
   "devDependencies": {
     "@types/qs": "^6.9.16",
-    "typescript": "^5.6.3"
+    "typescript": "^5.6.3",
+    "jest": "^29.7.0",
+    "@types/jest": "^29.5.0",
+    "ts-jest": "^29.1.0",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/jest-dom": "^6.1.0",
+    "@testing-library/react-hooks": "^8.0.1"
   }
 }
 EOF
 echo -e "${GREEN}✓ package.json criado${NC}"
 echo ""
 
-# 3. Criar tsconfig.json
+# 3. Criar jest.config.js
+echo -e "${BLUE}🧪 Criando jest.config.js...${NC}"
+cat > packages/api-client/jest.config.js << 'EOF'
+module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'jsdom',
+  roots: ['<rootDir>/src', '<rootDir>/__tests__'],
+  testMatch: ['**/__tests__/**/*.test.ts', '**/__tests__/**/*.test.tsx'],
+  moduleNameMapper: {
+    '^@/(.*)$': '<rootDir>/src/$1',
+  },
+  collectCoverageFrom: [
+    'src/**/*.{ts,tsx}',
+    '!src/**/*.d.ts',
+    '!src/index.ts',
+  ],
+  coverageThreshold: {
+    global: {
+      branches: 70,
+      functions: 70,
+      lines: 70,
+      statements: 70,
+    },
+  },
+  setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+}
+EOF
+echo -e "${GREEN}✓ jest.config.js criado${NC}"
+echo ""
+
+# 4. Criar jest.setup.js
+echo -e "${BLUE}🧪 Criando jest.setup.js...${NC}"
+cat > packages/api-client/jest.setup.js << 'EOF'
+require('@testing-library/jest-dom')
+
+// Mock localStorage
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+}
+
+global.localStorage = localStorageMock
+
+// Mock fetch
+global.fetch = jest.fn()
+EOF
+echo -e "${GREEN}✓ jest.setup.js criado${NC}"
+echo ""
+
+# 5. Criar tsconfig.json
 echo -e "${BLUE}⚙️  Criando tsconfig.json...${NC}"
 cat > packages/api-client/tsconfig.json << 'EOF'
 {
@@ -190,15 +254,26 @@ echo ""
 echo "📂 Estrutura criada em: packages/api-client/"
 echo ""
 echo "📝 Próximos passos:"
-echo "   1. Copiar código do arquivo CODIGO_PRONTO_COPIAR.md"
-echo "   2. Adicionar @repo/api-client aos apps:"
-echo "      cd apps/web-admin && npm install"
-echo "   3. Seguir o guia START_HERE.md"
+echo "   1. Instalar dependências: pnpm install"
+echo "   2. Copiar código do arquivo CODIGO_PRONTO_COPIAR.md"
+echo "   3. Seguir o guia TAREFAS.md"
+echo "   4. Rodar testes: pnpm --filter api-client test"
+echo ""
+echo "🧪 Testes configurados:"
+echo "   - Jest com ts-jest"
+echo "   - @testing-library/react"
+echo "   - Coverage threshold: 70%"
 echo ""
 echo "📚 Arquivos de referência:"
-echo "   - START_HERE.md            (guia rápido)"
-echo "   - CODIGO_PRONTO_COPIAR.md  (código completo)"
-echo "   - PLANO_MONOREPO_TURBOREPO.md (detalhes)"
+echo "   - TAREFAS.md                (checklist completo)"
+echo "   - EXEMPLOS_TESTES_JEST.md   (exemplos de testes)"
+echo "   - CODIGO_PRONTO_COPIAR.md   (código completo)"
+echo "   - START_HERE.md             (guia rápido)"
+echo ""
+echo "🚀 Comandos úteis:"
+echo "   - pnpm test                 (rodar testes)"
+echo "   - pnpm test:coverage        (com coverage)"
+echo "   - turbo test                (todos os pacotes)"
 echo ""
 echo "🚀 Boa codificação!"
 echo ""
