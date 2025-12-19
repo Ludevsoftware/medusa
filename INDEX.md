@@ -137,6 +137,20 @@ Overview de tudo:
 
 ---
 
+### **TURBO_CLI_GUIA.md** 🚀
+**Guia completo do Turbo CLI**
+
+Comandos e workflows:
+- Criar workspaces
+- Build e dev
+- Filtros avançados
+- Cache e performance
+- CI/CD
+
+👉 **Para dominar o Turbo!**
+
+---
+
 ### **INDEX.md** (este arquivo) 📑
 **Índice de todos os arquivos**
 

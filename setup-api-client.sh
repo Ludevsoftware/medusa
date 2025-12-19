@@ -11,9 +11,26 @@ echo ""
 # Cores para output
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
+YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-# 1. Criar estrutura de pastas
+# 1. Criar workspace com Turbo CLI
+echo -e "${BLUE}📦 Criando workspace com Turbo CLI...${NC}"
+echo -e "${YELLOW}   Executando: turbo gen workspace --name api-client --type package${NC}"
+
+# Verificar se turbo está instalado
+if ! command -v turbo &> /dev/null; then
+    echo -e "${YELLOW}⚠️  Turbo CLI não encontrado. Instalando...${NC}"
+    pnpm add -g turbo
+fi
+
+# Criar workspace (isso cria a estrutura básica)
+turbo gen workspace --name api-client --type package --destination packages
+
+echo -e "${GREEN}✓ Workspace criado${NC}"
+echo ""
+
+# 2. Criar estrutura de pastas adicionais
 echo -e "${BLUE}📁 Criando estrutura de pastas...${NC}"
 mkdir -p packages/api-client/src/client
 mkdir -p packages/api-client/src/sdk

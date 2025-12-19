@@ -7,40 +7,75 @@
 
 ## ✅ FASE 1: Setup Inicial (1h 30min)
 
-### [ ] Tarefa #1: Criar Pacote api-client (20min)
+### [ ] Tarefa #1: Criar Workspace api-client (20min)
 **Prioridade:** 🔴 Crítica
 
-**Ações:**
+**Opção 1: Usar Turbo CLI (Recomendado)** ⚡
 ```bash
 cd seu-monorepo
+
+# Criar workspace com Turbo
+turbo gen workspace --name api-client --type package --destination packages
+
+# Criar estrutura de pastas
 mkdir -p packages/api-client/src/{client,sdk,hooks,types}
-mkdir -p packages/api-client/__tests__/{client,sdk,hooks}
-cd packages/api-client
+mkdir -p packages/api-client/__tests__/{client,sdk,hooks,types}
 ```
 
-**Criar:**
-- [ ] `package.json`
-- [ ] `tsconfig.json`
-- [ ] `jest.config.js`
-- [ ] `README.md`
-- [ ] `.gitignore`
-
-**Instalar dependências:**
+**Opção 2: Script Automático** 🚀
 ```bash
+chmod +x setup-api-client.sh
+./setup-api-client.sh
+```
+
+**Configurar package.json:**
+```json
+{
+  "name": "@repo/api-client",
+  "version": "0.0.1",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "type-check": "tsc --noEmit"
+  }
+}
+```
+
+**Instalar dependências (na raiz):**
+```bash
+cd packages/api-client
+
+# Adicionar ao package.json
 pnpm add @tanstack/react-query@^5.59.0 qs@^6.13.0
 pnpm add -D @types/qs@^6.9.16 typescript@^5.6.3
-pnpm add -D jest@^29.7.0 @types/jest@^29.5.0
-pnpm add -D ts-jest@^29.1.0
+pnpm add -D jest@^29.7.0 @types/jest@^29.5.0 ts-jest@^29.1.0
 pnpm add -D @testing-library/react@^14.0.0
 pnpm add -D @testing-library/jest-dom@^6.1.0
 pnpm add -D @testing-library/react-hooks@^8.0.1
+
+# Voltar para raiz e instalar tudo
+cd ../..
+pnpm install
 ```
 
-**Configurar Jest:**
-- [ ] Criar `jest.config.js` com preset ts-jest
-- [ ] Adicionar scripts de test no `package.json`
+**Criar arquivos:**
+- [ ] `jest.config.js` com preset ts-jest
+- [ ] `jest.setup.js` com mocks
+- [ ] `tsconfig.json`
+- [ ] `.gitignore`
 
-**Resultado:** Estrutura base criada e dependências instaladas.
+**Verificar:**
+```bash
+# Ver workspace criado
+turbo run build --dry-run
+
+# Deve aparecer api-client na lista
+```
+
+**Resultado:** Workspace criado e configurado no Turborepo.
 
 ---
 
@@ -784,6 +819,15 @@ Use este arquivo para acompanhar seu progresso.
 
 ## 🧪 Comandos Úteis
 
+### Criar Workspace
+```bash
+# Criar novo pacote com Turbo CLI
+turbo gen workspace --name api-client --type package --destination packages
+
+# Criar novo app
+turbo gen workspace --name web-admin --type app --destination apps
+```
+
 ### Testes
 ```bash
 # Rodar todos os testes
@@ -792,11 +836,14 @@ turbo test
 # Rodar testes do api-client
 turbo test --filter=api-client
 
-# Coverage
-pnpm --filter api-client test:coverage
+# Com coverage
+turbo test --filter=api-client -- --coverage
 
 # Watch mode
 pnpm --filter api-client test:watch
+
+# Testar apenas mudanças
+turbo test --filter='[main]'
 ```
 
 ### Desenvolvimento
@@ -804,29 +851,53 @@ pnpm --filter api-client test:watch
 # Rodar todos os apps
 turbo dev
 
-# Rodar app específico
-turbo dev --filter=web-admin
+# Rodar app específico + deps
+turbo dev --filter=web-admin...
+
+# Múltiplos apps
+turbo dev --filter=web-admin --filter=web-pilot
 
 # Build tudo
 turbo build
 
+# Build específico
+turbo build --filter=api-client
+
 # Lint
 turbo lint
 
-# Type check
-pnpm tsc --noEmit
+# Type check em todos
+turbo type-check
 ```
 
 ### Turborepo
 ```bash
-# Ver dependências
+# Ver estrutura e dependências
 turbo run build --dry-run
+
+# Ver grafo de dependências
+turbo run build --graph
 
 # Limpar cache
 turbo run build --force
 
-# Ver graph
-turbo run build --graph
+# Ver resumo de execução
+turbo run build --summarize
+```
+
+### pnpm Workspace
+```bash
+# Adicionar dep em pacote específico
+pnpm add react --filter=api-client
+
+# Instalar tudo
+pnpm install
+
+# Ver workspaces
+pnpm list -r --depth=-1
+
+# Ver quem depende de X
+pnpm why @repo/api-client
 ```
 
 ---
